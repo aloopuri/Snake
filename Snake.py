@@ -26,9 +26,15 @@ lead_y_change = 0
 randAppleX = 300
 randAppleY = 300
 
+
+
 def randomApplePos():
-    newX = round(random.randrange(11, 800 - block_size - 11))#/10.0)*10.0
-    newY = round(random.randrange(11, 600 - block_size - 11))#/10.0)*10.0
+    # print(round(15))
+    # newX = round(random.randrange(11, 800 - block_size - 11))#/10.0)*10.0
+    # newY = round(random.randrange(11, 600 - block_size - 11))#/10.0)*10.0
+    newX = round((random.randrange(11, 800 - block_size - 11)) / 10)*10
+    newY = round((random.randrange(11, 800 - block_size - 11)) / 10)*10
+    print(newX, ", ", newY)
     return newX, newY
 
 while not gameQuit:
@@ -61,8 +67,15 @@ while not gameQuit:
     AppleThickness = 10
     pygame.draw.rect(screen, Red, [randAppleX, randAppleY, AppleThickness, AppleThickness])
 
-    pygame.draw.rect(screen, Green, [lead_x, lead_y, 10, 10])    
+    pygame.draw.rect(screen, Green, [lead_x, lead_y, block_size, block_size])    
     pygame.display.update()
+
+    if lead_x  >= randAppleX and lead_x <= randAppleX + AppleThickness or lead_x + block_size >= randAppleX and lead_x + block_size <= randAppleX + AppleThickness:
+            if lead_y >= randAppleY and lead_y <= randAppleY + AppleThickness:
+                randAppleX, randAppleY = randomApplePos()
+                
+            elif lead_y + block_size >= randAppleY and lead_y + block_size <= randAppleY + AppleThickness:
+                randAppleX, randAppleY = randomApplePos()
 
     clock.tick(30)
 
