@@ -29,6 +29,14 @@ lead_y_change = 0
 randAppleX = 300
 randAppleY = 300
 
+snakeList = []
+snakeLength = 1
+
+def snake(block_size, snakeList):
+    for XnY in snakeList:
+        pygame.draw.rect(screen, Green, [XnY[0], XnY[1], block_size, block_size])  
+
+#generate new position for the apple
 def randomApplePos():
     newX = round((random.randrange(11, display_width - block_size - 11)) / 10)*10
     newY = round((random.randrange(11, display_height - block_size - 11)) / 10)*10
@@ -65,10 +73,23 @@ while not gameQuit:
     pygame.draw.rect(screen, Red, [randAppleX, randAppleY, AppleThickness, AppleThickness])
 
     pygame.draw.rect(screen, Green, [lead_x, lead_y, block_size, block_size])    
+
+
+    snakeHead = []
+    snakeHead.append(lead_x)
+    snakeHead.append(lead_y)
+    snakeList.append(snakeHead)
+
+    if len(snakeList) > snakeLength:
+        del snakeList[0]
+
+    snake(block_size, snakeList)
+    
     pygame.display.update()
 
     if lead_x == randAppleX and lead_y == randAppleY:
         randAppleX, randAppleY = randomApplePos()
+        snakeLength +=1
 
     clock.tick(20)
 
