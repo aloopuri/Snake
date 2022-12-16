@@ -1,98 +1,102 @@
 import pygame, sys, random
 
-pygame.init()
+class Snake:
 
-display_width = 800
-display_height = 600
+    pygame.init()
+    White = (255,255,255)
+    Green = (0,255,0)
+    Black = (0,0,0)
+    Red = (255,0,0)
 
-screen = pygame.display.set_mode((display_width,display_height))
-pygame.display.set_caption('Snake')
-clock = pygame.time.Clock()
+    display_width = 800
+    display_height = 600
+    screen = pygame.display.set_mode((display_width,display_height))
+    pygame.display.set_caption('Snake')
+    clock = pygame.time.Clock()            
+    
+    pygame.draw.rect(screen, Black, [4, 5, 791, 590], 10)
 
-White = (255,255,255)
-Green = (0,255,0)
-Black = (0,0,0)
-Red = (255,0,0)
+    def __init__(self):
+        self.lead_x = 400
+        self.lead_y = 300
+        self.lead_x_change = 0
+        self.lead_y_change = 0
+        self.randAppleX = 300
+        self.randAppleY = 300    
+        self.block_size = 10    
+        self.snakeList = []
+        self.snakeLength = 1
 
-pygame.draw.rect(screen, Black, [4, 5, 791, 590], 10)
+    def snake(self, block_size, snakeList):
+        for XnY in snakeList:
+            pygame.draw.rect(self.screen, self.Green, [XnY[0], XnY[1], block_size, block_size])  
 
-gameQuit = False
+    #generate new position for the apple
+    def randomApplePos(self):
+        newX = round((random.randrange(11, self.display_width - self.block_size - 11)) / 10)*10
+        newY = round((random.randrange(11, self.display_height - self.block_size - 11)) / 10)*10
+        return newX, newY
 
-block_size = 10
+    def gameLoop(self):
+        gameQuit = False
 
-lead_x = 400
-lead_y = 300
+        block_size = self.block_size
 
-lead_x_change = 0
-lead_y_change = 0
+        while not gameQuit:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    gameQuit = True
+                if event.type == pygame.KEYDOWN:
+                        if event.key == pygame.K_LEFT:
+                            self.lead_y_change = 0
+                            self.lead_x_change = -block_size
+                        elif event.key == pygame.K_RIGHT:
+                            self.lead_y_change = 0
+                            self.lead_x_change = block_size
+                        elif event.key == pygame.K_UP:
+                            self.lead_x_change = 0
+                            self.lead_y_change = -block_size
+                        elif event.key == pygame.K_DOWN:
+                            self.lead_x_change = 0
+                            self.lead_y_change = block_size
+                        elif event.key == pygame.K_m:       ## TO DO: remove this and add collision 
+                            self.randAppleX, self.randAppleY = self.randomApplePos()
 
-randAppleX = 300
-randAppleY = 300
+                
+            self.lead_x += self.lead_x_change
+            self.lead_y += self.lead_y_change
 
-snakeList = []
-snakeLength = 1
+            self.screen.fill(self.Black)
+            pygame.draw.rect(self.screen, self.Green, [4, 5, 791, 590], 10)
 
-def snake(block_size, snakeList):
-    for XnY in snakeList:
-        pygame.draw.rect(screen, Green, [XnY[0], XnY[1], block_size, block_size])  
+            AppleThickness = 10
+            pygame.draw.rect(self.screen, self.Red, [self.randAppleX, self.randAppleY, AppleThickness, AppleThickness])
 
-#generate new position for the apple
-def randomApplePos():
-    newX = round((random.randrange(11, display_width - block_size - 11)) / 10)*10
-    newY = round((random.randrange(11, display_height - block_size - 11)) / 10)*10
-    return newX, newY
+            pygame.draw.rect(self.screen, self.Green, [self.lead_x, self.lead_y, block_size, block_size])    
 
-while not gameQuit:
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            gameQuit = True
-        if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_LEFT:
-                    lead_y_change = 0
-                    lead_x_change = -block_size
-                elif event.key == pygame.K_RIGHT:
-                    lead_y_change = 0
-                    lead_x_change = block_size
-                elif event.key == pygame.K_UP:
-                    lead_x_change = 0
-                    lead_y_change = -block_size
-                elif event.key == pygame.K_DOWN:
-                    lead_x_change = 0
-                    lead_y_change = block_size
-                elif event.key == pygame.K_m:       ## TO DO: remove this and add collision 
-                    randAppleX, randAppleY = randomApplePos()
+            snakeHead = []
+            snakeHead.append(self.lead_x)
+            snakeHead.append(self.lead_y)
+            self.snakeList.append(snakeHead)
+
+            if len(self.snakeList) > self.snakeLength:
+                del self.snakeList[0]
+
+            self.snake(block_size, self.snakeList)    
+            pygame.display.update()
+
+            if self.lead_x == self.randAppleX and self.lead_y == self.randAppleY:
+                self.randAppleX, self.randAppleY = self.randomApplePos()
+                self.snakeLength +=1
+
+            self.clock.tick(20)
 
         
-    lead_x += lead_x_change
-    lead_y += lead_y_change
-
-    screen.fill(Black)
-    pygame.draw.rect(screen, Green, [4, 5, 791, 590], 10)
-
-    AppleThickness = 10
-    pygame.draw.rect(screen, Red, [randAppleX, randAppleY, AppleThickness, AppleThickness])
-
-    pygame.draw.rect(screen, Green, [lead_x, lead_y, block_size, block_size])    
+        pygame.quit()
+        quit()
 
 
-    snakeHead = []
-    snakeHead.append(lead_x)
-    snakeHead.append(lead_y)
-    snakeList.append(snakeHead)
-
-    if len(snakeList) > snakeLength:
-        del snakeList[0]
-
-    snake(block_size, snakeList)
+if __name__== "__main__" :
+    Snake().gameLoop()
     
-    pygame.display.update()
 
-    if lead_x == randAppleX and lead_y == randAppleY:
-        randAppleX, randAppleY = randomApplePos()
-        snakeLength +=1
-
-    clock.tick(20)
-
-
-pygame.quit()
-quit()
